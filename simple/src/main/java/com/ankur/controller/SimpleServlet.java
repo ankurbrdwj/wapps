@@ -7,6 +7,7 @@ import java.util.Date;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.annotation.WebInitParam;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class SimpleServlet
  */
-@WebServlet(urlPatterns={"/simple","*.do"})
+@WebServlet(urlPatterns={"/home"},name="SimpleServlet",initParams=@WebInitParam(name="ProductName",value="Welcome Home"))
 public class SimpleServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        String appName="My application";
@@ -29,38 +30,19 @@ public class SimpleServlet extends HttpServlet {
     public void init() throws ServletException{
     	appName=getServletContext().getInitParameter("ProductName");
     }
-	/**
-	 * @see Servlet#getServletConfig()
-	 */
-	public ServletConfig getServletConfig() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
-	 * @see Servlet#getServletInfo()
-	 */
-	public String getServletInfo() {
-		// TODO Auto-generated method stub
-		return null; 
-	}
-
+	
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		
-		//get Header
-		String header=request.getHeader("host");
-		//content
-		String content=request.getContentType();
-		//read parameter
+
+
 		String name=request.getParameter("name");
 		if(name!=null){
-			response.setContentType("text/xml");
-			response.setHeader("X-Custom-Header", (new Date()).toString());
-			PrintWriter out=response.getWriter().printf("<application>"
+			response.setContentType("text/html");
+			response.getWriter().printf("<application>"
 			+"<message>Hello %s</message>"
 					+ "<products>%s</products>"
 			+"</application>",name,appName);
