@@ -41,7 +41,7 @@ public class GoalServiceImpl implements GoalService {
 
 	public List<Goal> findAllGoals() {
 		// TODO Auto-generated method stub
-		return gp.loadAll();
+		return gp.findAll();
 	}
 
 	public List<GoalReport> findAllGoalReports() {
