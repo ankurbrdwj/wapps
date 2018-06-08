@@ -1395,7 +1395,7 @@
       <path value="$PROJECT_DIR$/multiselect/package.json" />
     </packageJsonPaths>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="width" value="992" />
     <option name="height" value="538" />
   </component>
@@ -1530,16 +1530,15 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1528439516654</updated>
-      <workItem from="1528439518317" duration="8189000" />
+      <workItem from="1528439518317" duration="8683000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="8189000" />
+    <option name="totallyTimeSpent" value="8683000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" />
       <window_info anchor="bottom" id="TODO" order="6" />
