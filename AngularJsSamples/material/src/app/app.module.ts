@@ -1,6 +1,7 @@
 import {CdkTableModule} from '@angular/cdk/table';
 import { NgModule } from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { CovalentChipsModule, CovalentCommonModule, CovalentDialogsModule} from '@covalent/core';
 import {
   MatAutocompleteModule,
   MatBadgeModule,
@@ -43,7 +44,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 import { GrouplistComponent } from './grouplist/grouplist.component';
-import { TableComponent } from './table/table.component';
+
 @NgModule({
   exports: [
     CdkTableModule,
@@ -81,15 +82,15 @@ import { TableComponent } from './table/table.component';
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
-    MatTreeModule,
-  ]
+    MatTreeModule
+  ],
+  declarations: []
 })
 export class DemoMaterialModule {}
 @NgModule({
   declarations: [
     AppComponent,
-    GrouplistComponent,
-    TableComponent
+    GrouplistComponent
   ],
   imports: [
     BrowserModule,
@@ -98,6 +99,22 @@ export class DemoMaterialModule {}
     MatNativeDateModule,
     ReactiveFormsModule,
     DemoMaterialModule,
+    CovalentChipsModule,
+    CovalentCommonModule,
+    CovalentDialogsModule,
+    CdkTableModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    MatListModule,
+    MatMenuModule,
+    MatNativeDateModule,
+    MatSnackBarModule,
+    MatGridListModule,
+    MatPaginatorModule,
+    MatTableModule
   ],
   providers: [],
   bootstrap: [AppComponent]
