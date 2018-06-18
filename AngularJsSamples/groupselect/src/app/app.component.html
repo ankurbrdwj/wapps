@@ -1,0 +1,46 @@
+<!--<td-layout-nav-list class="mat-icon-logo" logo="assets:logo" navigationRoute="home" #navList>
+
+&lt;!&ndash;  <mat-nav-list td-sidenav-content (click)="!_media.query('gt-sm') && navList.close()">
+    <a mat-list-item routerLink="/campaigns" routerLinkActive="active">
+      <mat-icon mat-list-avatar>view_compact</mat-icon>
+      <h3 matLine>Campaigns</h3>
+      <p matLine>Active campaigns</p>
+    </a>
+    <mat-divider md-inset></mat-divider>
+    <a mat-list-item routerLink="/campaigns" [queryParams]="{ archive: true }">
+      <mat-icon mat-list-avatar>archive</mat-icon>
+      <h3 matLine>Archived Campaigns</h3>
+      <p matLine>Past campaigns</p>
+    </a>
+    <mat-divider mat-inset></mat-divider>
+    <a mat-list-item routerLink="/reports/audit">
+      <mat-icon mat-list-avatar>receipt</mat-icon>
+      <h3 matLine>Audit Trail</h3>
+      <p matLine>Audit activity</p>
+    </a>
+  </mat-nav-list>&ndash;&gt;
+
+&lt;!&ndash;
+  <div td-toolbar-content layout="row" layout-align="center center" flex>
+    <span>Virtual Drawings</span>
+    <span flex></span>
+    <a mat-icon-button *ngIf="homeUrl" [href]="homeUrl" matTooltip="Home" matTooltipPosition="below"><mat-icon>home</mat-icon></a>
+    <span class="mat-subhead">{{user}}</span>
+    <span>
+      <button mat-icon-button [matMenuTriggerFor]="toolbarMenu"><mat-icon>more_vert</mat-icon></button>
+      <mat-menu #toolbarMenu="matMenu">
+        <button mat-menu-item (click)="onHelp()"><mat-icon>help</mat-icon> Help</button>
+        <button mat-menu-item (click)="onLogout()"><mat-icon>exit_to_app</mat-icon> Logout</button>
+        <button mat-menu-item (click)="onAbout()"><mat-icon>info_outline</mat-icon> About</button>
+      </mat-menu>
+    </span>
+  </div>
+&ndash;&gt;
+
+&lt;!&ndash;  <router-outlet></router-outlet>&ndash;&gt;
+
+</td-layout-nav-list>-->
+<nav>
+  <a routerLink="/campaigns" routerLinkActive="active">campaigns</a>
+</nav>
+<router-outlet></router-outlet>

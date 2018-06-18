@@ -1,0 +1,42 @@
+<mat-card *ngIf="campaigns">
+
+  <div layout="row" layout-align="start center" class="push-right">
+    <mat-card-title>{{isArchive ? 'Archived' : ''}} Campaigns</mat-card-title>
+    <span flex></span>
+    <td-search-box placeholder="Search..." [showUnderline]="true" (searchDebounce)="onSearch($event)"></td-search-box>
+  </div>
+
+  <mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
+
+  <mat-card-content>
+
+    <mat-list>
+
+      <mat-list-item layout="row" *ngIf="campaigns.length > 0">
+        <span flex="10"></span>
+        <span flex="25" layout="column" class="mat-body-1 tc-grey-500">Name</span>
+        <span flex="40" layout="column" class="mat-body-1 tc-grey-500">Description</span>
+        <span flex></span>
+      </mat-list-item>
+
+      <ng-template let-campaign ngFor [ngForOf]="campaigns">
+
+        <mat-divider></mat-divider>
+        <mat-list-item layout="row">
+          <span flex="10"><button mat-button color="primary" class="text-upper" [routerLink]="['/campaigns', campaign.id]">View</button></span>
+          <span flex="25" layout="column" class="mat-body-1 text-truncate">{{campaign.name}}</span>
+          <span flex="40" layout="column" class="mat-body-1 text-truncate">{{campaign.description}}</span>
+        </mat-list-item>
+
+      </ng-template>
+
+    </mat-list>
+
+  </mat-card-content>
+
+
+  <mat-card-actions>
+    <button mat-button color="primary" class="text-upper" [routerLink]="['/campaigns/create']" >New Campaign</button>
+  </mat-card-actions>
+
+</mat-card>
