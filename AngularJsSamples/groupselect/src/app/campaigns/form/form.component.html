@@ -1,14 +1,19 @@
+<style>
+  div:hover  {visibility: visible;}
+  mat-cell > div:hover  {background-color: red;}
+</style>
+
 <mat-card>
   <mat-card-title>Campaign</mat-card-title>
 
   <mat-card-content>
 
-  <form #inputForm="ngForm">
+    <form #inputForm="ngForm">
     <span layout="row" layout-align="start center">
       <span layout="column" layout-margin>
         <mat-form-field flex="25">
           <input #nameInput="ngModel" matInput placeholder="Name" size="30" maxlength="256"
-            [(ngModel)]="campaign.name" name="name" required tdAutoTrim>
+                 [(ngModel)]="campaign.name" name="name" required tdAutoTrim>
           <mat-hint>
             <span [hidden]="nameInput.pristine || !nameInput.errors?.required" class="tc-red-600">Required</span>
           </mat-hint>
@@ -16,19 +21,17 @@
       </span>
       <span layout="column" layout-margin>
         <mat-form-field flex="25">
-          <input #descriptionInput="ngModel" matInput placeholder="Description" size="50" maxlength="256"
-            [(ngModel)]="campaign.description" name="description" required tdAutoTrim>
+          <input #descriptionInput="ngModel" matInput placeholder="Description" size="50" maxlength="256" [(ngModel)]="campaign.description" name="description" required tdAutoTrim>
           <mat-hint>
             <span [hidden]="descriptionInput.pristine || !descriptionInput.errors?.required" class="tc-red-600">Required</span>
           </mat-hint>
         </mat-form-field>
       </span>
     </span>
-    <span layout="row" layout-align="start center">
+      <span layout="row" layout-align="start center">
       <span layout="column" layout-margin>
         <mat-form-field flex="25">
-          <input #rateInput="ngModel" matInput placeholder="Entry Multiplier"
-            [(ngModel)]="campaign.rate" name="rate" pattern="[1-9]\d{0,7}" required tdAutoTrim>
+          <input #rateInput="ngModel" matInput placeholder="Entry Multiplier" [(ngModel)]="campaign.rate" name="rate" pattern="[1-9]\d{0,7}" required tdAutoTrim>
           <mat-hint>
             <span [hidden]="rateInput.pristine || !rateInput.errors?.required" class="tc-red-600">Required</span>
             <span [hidden]="!rateInput.errors?.pattern" class="tc-red-600">Use numbers from 1-99999999</span>
@@ -37,8 +40,7 @@
       </span>
       <span layout="column" layout-margin>
         <mat-form-field flex="25">
-          <input #durationInput="ngModel" matInput placeholder="Drawing Notification"
-            [(ngModel)]="campaign.anticipationDuration" name="duration" pattern="\d{0,8}">
+          <input #durationInput="ngModel" matInput placeholder="Drawing Notification" [(ngModel)]="campaign.anticipationDuration" name="duration" pattern="\d{0,8}">
           <span matSuffix>sec</span>
           <mat-hint>
             <span [hidden]="!durationInput.errors?.pattern" class="tc-red-600">Use numbers from 0-99999999</span>
@@ -52,40 +54,48 @@
         <mat-checkbox class="push" [checked]="campaign.isAutoNotify" (change)="onCheckbox3(campaign)">Auto Notify</mat-checkbox>
       </div>
     </span>
-    <span class="mat-subhead">Groups &amp; Tiers</span>
-    <td-chips [items]="groupList" [(ngModel)]="input.groups" name="groups" #grps placeholder="Enter Groups" requireMatch (onInputChange)="getGroups($event.value)"></td-chips>
-    <td-chips [items]="tierList" [(ngModel)]="input.tiers" name="tiers" #trs placeholder="Enter Tiers" requireMatch (onInputChange)="getTiers($event.value)"></td-chips>
-    <span layout="row" class="mat-caption tc-grey-500 push-top">* Required</span>
-    <span class="mat-subhead">Custom Multiplier Eligibility</span>
-    <mat-form-field>
-      <mat-select placeholder="Choose Groups and Tiers"  name="groupsTierWithMulti" #gtwm [formControl]="groupsControl" (click)="fillMultiOpts(gtwm, grps.value, trs.value)" multiple>
-        <mat-option >NNN</mat-option>
-{{/*        <mat-option *ngFor="let rate of campaign.eligibilityRates" [value]="rate.id">
-        {{rate.id}}
-        </mat-option>*/}}
-      </mat-select>
-    </mat-form-field>
+      <span class="mat-subhead" layout-margin>Groups &amp; Tiers</span>
+
+      <td-chips #glist [items]="groupList" [(ngModel)]="input.groups" name="groups" placeholder="Enter Groups" requireMatch (add)="getGroups(input.groups)"></td-chips>
+      <td-chips #tlist [items]="tierList" [(ngModel)]="input.tiers" name="tiers" placeholder="Enter Tiers" requireMatch (add)="getTiers(input.tiers)"></td-chips>
+      <span layout="row" class="mat-caption tc-grey-500 push-top">* Required</span>
+      <br/>
+      <span class="mat-subhead" layout-margin>Multiplier Eligibility</span>
+      <span layout="row" layout-align="start center">
+      <span layout="column" layout-margin>
     <mat-form-field flex="25">
-      <input #multiplierInput="ngModel" matInput placeholder="Multiplier"
-             [(ngModel)]="input.multiplier" name="multiplier" pattern="[1-9]\d{0,7}" required tdAutoTrim>
+      <input #multiplierInput="ngModel" matInput placeholder="Multiplier" [(ngModel)]="input.multiplier" name="multiplier" pattern="[1-9]\d{0,7}" >
       <mat-hint>
-        <span [hidden]="multiplierInput.pristine || !rateInput.errors?.required" class="tc-red-600">Required</span>
         <span [hidden]="!multiplierInput.errors?.pattern" class="tc-red-600">Use numbers from 1-99999999</span>
       </mat-hint>
     </mat-form-field>
-    <mat-card-actions>
-      <button mat-button class="text-upper" ng-click="showTable=true"><mat-icon>add</mat-icon> Add Multiplier</button>
-    </mat-card-actions>
-  </form>
-
+    </span>
+    </span>
+      <span class="mat-subhead" layout-margin>
+    <td-chips [items]="selgroupList" [(ngModel)]="input.selGroups" name="selGroups" placeholder="Enter Multiplier Groups" requireMatch ></td-chips>
+    <td-chips [items]="seltierList" [(ngModel)]="input.selTiers" name="selTiers" placeholder="Enter Multiplier Tiers" requireMatch ></td-chips>
+      </span>
+      <mat-card-actions>
+        <button mat-button color="primary" ng-click="showTable=true" [disabled]="!input.multiplier" (click)="fillRates(input.multiplier); createTable()"> ADD MULTIPLIER ELIGIBILITY</button>
+        <button mat-raised-button class="text-upper" (click)="closeContent()">Cancel</button>
+      </mat-card-actions>
+    </form>
     <div *ngIf="showTable">
-      <span class="mat-subhead">Created Custom Multiplier Eligibility</span>
+      <div class="mat-subhead">Created Custom Multiplier Eligibility</div>
+      <br/><br/>
       <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-
+        <!-- Delete Row Icon -->
+        <ng-container matColumnDef="action">
+          <mat-header-cell mat-header-cell *matHeaderCellDef> Action</mat-header-cell>
+          <mat-cell *matCellDef="let element; let i = index">
+            <button mat-icon-button class="text-upper" (click)="deleteRow(i)"><mat-icon>delete</mat-icon></button>
+          </mat-cell>
+        </ng-container>
         <!-- Name Column -->
         <ng-container matColumnDef="name">
           <mat-header-cell mat-header-cell *matHeaderCellDef> Name</mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+          <mat-cell mat-tooltip="Tooltip Text" (touched)='nameTouched()'  matTooltipPosition="after" mat-cell *matCellDef="let element" > {{element.name}}
+            <div id="jk" name="jk" style="visibility: hidden;"> <span> xxxx {{element.name}}</span></div> </mat-cell>
         </ng-container>
 
         <!-- Type Column -->
@@ -104,14 +114,18 @@
         <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
       </mat-table>
     </div>
-
-
+    <br><br>
+    <div mat-tooltip="test tooltip 123" matTooltipPosition="above">
+      <span>test tooltip</span>
+    </div>
   </mat-card-content>
 
   <mat-divider></mat-divider>
 
   <mat-card-actions>
-    <button mat-raised-button color="primary" class="text-upper" [disabled]="!inputForm.valid || !canSave" (click)="onSave()">Save</button>
+    <button mat-raised-button color="primary" [disabled]="!inputForm.valid" class="text-upper"
+            (click)="onSave()">Save
+    </button>
     <button mat-raised-button class="text-upper" (click)="onCancel()">Cancel</button>
   </mat-card-actions>
 

@@ -162,7 +162,7 @@ export class ItemComponent implements OnInit, OnDestroy {
     for (let tier of this.tiers) {
       rateName.push(tier.name);
       rateType.push('Tier');
-      for (let rate of this.campaign.eligibilityRates) {
+      for (let rate of this.campaign.eligibilityRate) {
         if (tier.name === rate.id) {
           rates.push(rate);
         }
@@ -182,7 +182,7 @@ export class ItemComponent implements OnInit, OnDestroy {
     for (let group of this.groups) {
       rateName.push(group.name);
       rateType.push('Group');
-      for (let rate of this.campaign.eligibilityRates) {
+      for (let rate of this.campaign.eligibilityRate) {
         if (group.name === rate.id) {
           rates.push(rate);
         }

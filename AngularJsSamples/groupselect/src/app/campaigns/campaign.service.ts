@@ -162,7 +162,7 @@ function toCampaign(r: any): Campaign {
         groups: r.groups,
         tiers: r.tiers,
         rate: r.rate,
-        eligibilityRates: mapEligibilityRates(r.eligibilityRates),
+        eligibilityRate: mapEligibilityRates(r.eligibilityRate),
         canRollover: r.canRollover,
         isArchived: r.isArchived,
         isAutoDraw: r.isAutoDraw,
@@ -204,6 +204,7 @@ function toTier(r: any): Tier {
 function toEligibilityRate(r: any): EligibilityRate {
   let er = <EligibilityRate>({
     id: r.id,
+    name: r.name,
     type: r.name,
     rate: r.rate
   });
