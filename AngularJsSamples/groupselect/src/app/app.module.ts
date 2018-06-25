@@ -13,6 +13,8 @@ import {
   MatListModule, MatMenuModule, MatNativeDateModule, MatPaginatorModule,
   MatSelectModule, MatSnackBarModule, MatTableModule
 } from '@angular/material';
+import { PopoverModule } from 'ngx-bootstrap';
+import { TooltipModule } from 'ngx-bootstrap';
 import {HttpModule} from '@angular/http';
 import {CovalentDialogsModule, CovalentLayoutModule, CovalentLoadingModule, CovalentMediaModule} from '@covalent/core';
 import {CampaignsModule} from './campaigns/campaigns.module';
@@ -50,7 +52,9 @@ import {AppRoutingModule, ROUTES} from './app.routing';
     CovalentMediaModule,
     CampaignsModule,
     ROUTES,
-    AppRoutingModule
+    AppRoutingModule,
+    PopoverModule.forRoot(),
+    TooltipModule.forRoot()
   ],
   exports: [
     HttpClientModule,

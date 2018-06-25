@@ -94,7 +94,8 @@
         <!-- Name Column -->
         <ng-container matColumnDef="name">
           <mat-header-cell mat-header-cell *matHeaderCellDef> Name</mat-header-cell>
-          <mat-cell mat-tooltip="Tooltip Text" (touched)='nameTouched()'  matTooltipPosition="after" mat-cell *matCellDef="let element" > {{element.name}}
+          <mat-cell tooltip="Vivamus sagittis lacus vel augue laoreet rutrum faucibus."
+                    placement="bottom" mat-cell *matCellDef="let element" > {{element.name}}
             <div id="jk" name="jk" style="visibility: hidden;"> <span> xxxx {{element.name}}</span></div> </mat-cell>
         </ng-container>
 
@@ -120,6 +121,18 @@
     </div>
   </mat-card-content>
 
+  <button type="button" class="btn btn-default btn-secondary"
+          popover="Vivamus sagittis lacus vel augue laoreet rutrum faucibus."
+          popoverTitle="Popover on bottom"
+          placement="bottom">
+    Popover on bottom
+  </button>
+
+  <button type="button" class="btn btn-default btn-secondary mb-2"
+          tooltip="Vivamus sagittis lacus vel augue laoreet rutrum faucibus."
+          placement="bottom">
+    Tooltip on bottom
+  </button>
   <mat-divider></mat-divider>
 
   <mat-card-actions>

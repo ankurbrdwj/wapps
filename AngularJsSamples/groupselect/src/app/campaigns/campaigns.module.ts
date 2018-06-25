@@ -7,7 +7,8 @@ import { MatButtonModule, MatCardModule, MatCommonModule, MatIconModule, MatList
   MatInputModule, MatSelectModule, MatCheckboxModule, MatProgressBarModule, MatGridListModule, MatPaginatorModule, MatTableModule,
   MatMenuModule, MatNativeDateModule, MatSnackBarModule  } from '@angular/material';
 import { CovalentChipsModule, CovalentCommonModule, CovalentDialogsModule, CovalentFileModule, CovalentSearchModule } from '@covalent/core';
-
+import { PopoverModule } from 'ngx-bootstrap';
+import { TooltipModule } from 'ngx-bootstrap';
 import { CampaignService } from './campaign.service';
 import { FormComponent } from './form/form.component';
 import { ListComponent } from './list/list.component';
@@ -45,7 +46,9 @@ import { ItemComponent } from './item/item.component';
     CovalentCommonModule,
     CovalentDialogsModule,
     CovalentFileModule,
-    CovalentSearchModule
+    CovalentSearchModule,
+    PopoverModule.forRoot(),
+    TooltipModule.forRoot()
   ],
   providers: [CampaignService]
 })
