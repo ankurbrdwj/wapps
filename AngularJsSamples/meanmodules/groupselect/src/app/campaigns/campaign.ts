@@ -1,3 +1,4 @@
+
 export interface Campaign {
   id: number;
   name: string;
@@ -14,6 +15,8 @@ export interface Campaign {
   isAutoNotify: boolean;
   anticipationDuration: number;
   canEdit: boolean;
+  status: string;
+  isComplete: boolean;
 }
 
 export interface CampaignRequest {
@@ -24,22 +27,17 @@ export interface Group {
   id: string;
   name: string;
 }
+
 export interface Tier {
   id: string;
   name: string;
 }
-export interface CustomEligibility {
-  id: string ;
-  selGroups: string[];
-  selTiers: string[];
-  rate: number;
-}
 
 export interface EligibilityRate {
   id: string ;
-  name: string;
   type: string;
   rate: number;
+  name: string;
 }
 export interface TableElement {
   name: string;

@@ -1,23 +1,25 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {TdLoadingService, TdDialogService, TdFileService} from '@covalent/core';
-import {MatSnackBar} from '@angular/material';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { TdLoadingService, TdDialogService, TdFileService, IUploadOptions } from '@covalent/core';
+import { MatSnackBar, MatTableDataSource } from '@angular/material';
 
-import {Campaign, Group, EligibilityRate, Tier, Prize} from '../campaign';
-import {CampaignService} from '../campaign.service';
+import { Campaign, Group, Tier, EligibilityRate, TableElement, Prize } from '../campaign';
+import { CampaignService } from '../campaign.service';
 
 @Component({
   selector: 'app-campaign-item',
   templateUrl: './item.component.html',
   styleUrls: ['./item.component.scss'],
-  providers: [TdFileService]
+  providers: [ TdFileService ]
 })
 export class ItemComponent implements OnInit, OnDestroy {
   id: string;
   campaign: Campaign;
   groups: Group[];
   tiers: Tier[];
-  eligibilityRates: EligibilityRate[];
+  table: TableElement[];
+  dataSource: any;
+  displayedColumns: string[];
   groupList: string;
   tierList: string;
   csub: any;
@@ -30,6 +32,9 @@ export class ItemComponent implements OnInit, OnDestroy {
   addDrawing: boolean;
   showUpload: boolean;
   disableUpload: boolean;
+  canArchive: boolean;
+  canCreate: boolean;
+  canUpdate: boolean;
 
   constructor(
     private _route: ActivatedRoute,
@@ -39,10 +44,14 @@ export class ItemComponent implements OnInit, OnDestroy {
     private _fileService: TdFileService,
     private _snackBar: MatSnackBar,
     private _campaignService: CampaignService,
-  ) {
-  }
+  ) { }
 
   ngOnInit() {
+
+    this.canArchive = true;
+    this.canCreate = true;
+    this.canUpdate = true;
+
     this.csub = this._route.params.subscribe(params => {
       this.id = params['id'];
       if (this.id) {
@@ -57,12 +66,14 @@ export class ItemComponent implements OnInit, OnDestroy {
           groups: [],
           prizes: [],
           tiers: [],
+          eligibilityRate: [],
           rate: null,
           canRollover: false,
           isArchived: false,
           isAutoDraw: false,
           isAutoNotify: false,
-          anticipationDuration: null
+          anticipationDuration: null,
+          isComplete: false
         };
       }
     });
@@ -101,14 +112,13 @@ export class ItemComponent implements OnInit, OnDestroy {
         response => {
           this.campaign = response;
           let url = this._route.snapshot.url;
-          if (url.length > 0) {
-            this.edit = (url.pop().toString().toLowerCase() === 'edit');
-          }
+          if (url.length > 0) { this.edit = (url.pop().toString().toLowerCase() === 'edit') } ;
           this.showUpload = this.campaign.canEdit && this.campaign.rulesFilename.length === 0;
           this.convertTiers();
+          this.getEligibility();
         },
         error => {
-          this._dialogService.openAlert({message: error});
+          this._dialogService.openAlert({ message: error });
         });
   }
 
@@ -132,70 +142,44 @@ export class ItemComponent implements OnInit, OnDestroy {
 
   convertTiers() {
     this.tierList = this.campaign.tiers.join(', ');
-    if (this.tierList.length === 0) {
-      this.tierList = '(No Tiers)';
-    }
+    if (this.tierList.length === 0) { this.tierList = '(No Tiers)' } ;
   }
-
-  convertTiers2() {
-    let tierList: string[] = [];
-    let tierId: string[] = [];
-    for (let tier of this.tiers) {
-      tierList.push(tier.name);
-      tierId.push(tier.id);
-    }
-    let tiers: string[] = [];
-    for (let tier of this.campaign.tiers) {
-      tiers.push(tierList[tierId.indexOf(tier)]);
-    }
-    if (tiers.length === 0) {
-      this.tierList = '(No Tiers)';
-    } else {
-      this.tierList = tiers.join(', ');
-    }
-  }
-
-  fillTiers() {
-    let rateName: string[] = [];
-    let rateType: string[] = [];
-    let rates: EligibilityRate[] = [];
-    for (let tier of this.tiers) {
-      rateName.push(tier.name);
-      rateType.push('Tier');
-      for (let rate of this.campaign.eligibilityRate) {
-        if (tier.name === rate.id) {
-          rates.push(rate);
+  // create table from Campaign Object from Database
+  getEligibility() {
+    this.displayedColumns = ['name', 'type', 'multiplier'];
+    this.table = [];
+    let multipliers: any[];
+    multipliers = Array.from(new Set(this.campaign.eligibilityRate.map(eligibilityRate => eligibilityRate.rate)));
+    for (let row of multipliers) {
+      let groupElement = <TableElement>{};
+      let tierElement = <TableElement>{};
+      let groupNames: string[] = [];
+      let tierNames: string[] = [];
+      for (let column of this.campaign.eligibilityRate) {
+        if (row === column.rate && column.type === 'Group') {
+          groupNames.push(column.name) ;
+          groupElement.type = 'Group';
+          groupElement.multiplier =row;
+        } else if (row === column.rate && column.type === 'Tier') {
+          tierNames.push(column.name) ;
+          tierElement.type = 'Tier';
+          tierElement.multiplier = row;
         }
       }
-    }
-    if (rates.length === 0) {
-      this.eligibilityRates = null;
-    } else {
-      this.eligibilityRates = rates;
-    }
-  }
-
-  fillGroups() {
-    let rateName: string[] = [];
-    let rateType: string[] = [];
-    let rates: EligibilityRate[] = [];
-    for (let group of this.groups) {
-      rateName.push(group.name);
-      rateType.push('Group');
-      for (let rate of this.campaign.eligibilityRate) {
-        if (group.name === rate.id) {
-          rates.push(rate);
-        }
+      if ( groupNames.length > 0 ) { groupElement.name = groupNames.join(',') } ;
+      if ( tierNames.length > 0 ) { tierElement.name = tierNames.join(',') } ;
+      if (!(Object.keys(groupElement).length === 0 && groupElement.constructor === Object)) {
+        groupElement.name.replace(',$', '');
+        this.table.push(groupElement);
+      }
+      if (!(Object.keys(tierElement).length === 0 && tierElement.constructor === Object)) {
+        tierElement.name.replace(',$', '');
+        this.table.push(tierElement);
       }
     }
-    if (rates.length === 0) {
-      this.eligibilityRates = null;
-    } else {
-      this.eligibilityRates.join(', ');
-    }
+    this.dataSource = new MatTableDataSource<TableElement>(this.table);
   }
-
-  /*onEdit() {
+  onEdit() {
     this.edit = true;
   }
 
@@ -222,6 +206,7 @@ export class ItemComponent implements OnInit, OnDestroy {
     this.campaign.anticipationDuration = +this.campaign.anticipationDuration;
     this.convertGroups();
     this.convertTiers();
+    this.getEligibility();
 
     if (this.create) {
       let o = this._campaignService
@@ -253,78 +238,67 @@ export class ItemComponent implements OnInit, OnDestroy {
       this.edit = false;
     }
   }
-*/
-  /* onAddPrize() {
-     this.addPrize = true;
-   }
 
-   onDeletePrize(index: number) {
-     this.campaign.prizes.splice(index, 1);
-     let o = this._campaignService
-       .save(this.campaign)
-       .subscribe(
-         response => {
-           this._snackBar.open('Prize deconsted.', 'OK', { duration: 5000 });
-         },
-         error => {
-           this._dialogService.openAlert({ message: error });
-           this.getCampaign();
-         });
-   }
+  onAddPrize() {
+    this.addPrize = true;
+  }
 
-   onSavePrize(prize: Prize) {
-     this.addPrize = false;
-     this.campaign.prizes.push(prize);
+  onDeletePrize(index: number) {
+    this.campaign.prizes.splice(index, 1);
+    let o = this._campaignService
+      .save(this.campaign)
+      .subscribe(
+        response => {
+          this._snackBar.open('Prize deleted.', 'OK', { duration: 5000 });
+        },
+        error => {
+          this._dialogService.openAlert({ message: error });
+          this.getCampaign();
+        });
+  }
 
-     let o = this._campaignService
-       .save(this.campaign)
-       .subscribe(
-         response => {
-           this._snackBar.open('Prize added.', 'OK', { duration: 5000 });
-         },
-         error => {
-           this._dialogService.openAlert({ message: error });
-           this.getCampaign();
-         });
-   }
+  onSavePrize(prize: Prize) {
+    this.addPrize = false;
+    this.campaign.prizes.push(prize);
 
-   onCancelPrize() {
-     this.addPrize = false;
-   }
+    let o = this._campaignService
+      .save(this.campaign)
+      .subscribe(
+        response => {
+          this._snackBar.open('Prize added.', 'OK', { duration: 5000 });
+        },
+        error => {
+          this._dialogService.openAlert({ message: error });
+          this.getCampaign();
+        });
+  }
 
-   onAddDrawing(show: boolean) {
-     this.addDrawing = show;
-   }
+  onCancelPrize() {
+    this.addPrize = false;
+  }
 
-   onFileUpload(file: File) {
-     let options = this._campaignService.uploadOptions(this.id, file);
-     this.disableUpload = true;
-     this._fileService.upload(options).subscribe((response) => {
-       this._snackBar.open('Rules uploaded.', 'OK', { duration: 5000 });
-       this.showUpload = false;
-       this.getCampaign();
-     });
-   }
+  onAddDrawing(show: boolean) {
+    this.addDrawing = show;
+  }
 
-   onDownload() {
-     window.location.href = this._campaignService.getRulesDownloadUrl(this.id);
-   }
+  onFileUpload(file: File) {
+    let options = this._campaignService.uploadOptions(this.id, file);
+    this.disableUpload = true;
+    this._fileService.upload(options).subscribe((response) => {
+      this._snackBar.open('Rules uploaded.', 'OK', { duration: 5000 });
+      this.showUpload = false;
+      this.getCampaign();
+    });
+  }
 
-   onUpload() {
-     this.showUpload = true;
-     this.disableUpload = false;
-   }
+  onDownload() {
+    window.location.href = this._campaignService.getRulesDownloadUrl(this.id);
+  }
 
-   onArchive() {
-     this._loadingService.register();
-     let o = this._campaignService
-       .archive(this.id)
-       .subscribe(response => {
-         setTimeout(() => this._loadingService.resolve(), 800);
-         this._router.navigate(['/campaigns'])
-       }, error => {
-         setTimeout(() => this._loadingService.resolve(), 800);
-         this._dialogService.openAlert({ message: error });
-       });
-   }*/
+  onUpload() {
+    this.showUpload = true;
+    this.disableUpload = false;
+  }
+
 }
+

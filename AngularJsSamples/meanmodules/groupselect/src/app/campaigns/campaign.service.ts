@@ -23,7 +23,7 @@ export class CampaignService {
   getAll(archive: boolean = false): Observable<Campaign[]> {
     let flag = archive ? '?isarchived=true' : '';
     let campaigns$ = this.http
-      .get(`/assets/data/campaigns.json`, {headers: this.getHeaders()})
+      .get('/assets/data/campaigns.json', {headers: this.getHeaders()})
       .map(mapCampaigns)
       .catch(handleError);
     return campaigns$;
@@ -31,13 +31,13 @@ export class CampaignService {
 
   get(id: string): Observable<Campaign> {
     let campaign$ = this.http
-      .get(`/assets/data/campaign.json`, {headers: this.getHeaders()})
+      .get('/assets/data/campaign.json', {headers: this.getHeaders()})
       .map(mapCampaign)
       .catch(handleError);
     return campaign$;
   }
 
- /* create(campaign: Campaign): Observable<Campaign> {
+  create(campaign: Campaign): Observable<Campaign> {
     let req = {
       campaign: campaign
     }
@@ -73,41 +73,40 @@ export class CampaignService {
       .map((res: Response) => res.json())
       .catch(handleError);
     return res$;
-  }*/
+  }
 
   groups() {
     let groups$ = this.http
-      .get(`/assets/data/groups.json`, {headers: this.getHeaders()})
+      .get('/assets/data/groups.json', {headers: this.getHeaders()})
       .map(mapGroups)
       .catch(handleError);
+
     return groups$;
   }
 
   tiers() {
     let tiers$ = this.http
-      .get(`/assets/data/tiers.json`, {headers: this.getHeaders()})
+      .get('/assets/data/tiers.json', {headers: this.getHeaders()})
       .map(mapTiers)
       .catch(handleError);
     return tiers$;
   }
 
-/*
     uploadOptions(id: string, file: File) {
         let options: IUploadOptions = {
             url: `${this._baseUrl}/campaigns/${id}/upload`,
             method: 'post',
             headers: { Accept: 'application/json' },
-            file: filesssss
+            file: file
         };
         if (this._token) options.headers.Authorization = 'Bearer ' + this._token;
 
         return options;
     }
-*/
 
- /*   getRulesDownloadUrl(id: string): string {
+    getRulesDownloadUrl(id: string): string {
         return `${this._baseUrl}/campaigns/${id}/download`;
-    }*/
+    }
 
     getHeaders() {
         let headers = new Headers();

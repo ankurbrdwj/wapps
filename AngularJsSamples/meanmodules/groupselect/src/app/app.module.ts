@@ -5,16 +5,10 @@ import {CdkTableModule} from '@angular/cdk/table';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
-  MatButtonModule,
-  MatCardModule,
-  MatCommonModule, MatGridListModule,
-  MatIconModule,
-  MatInputModule,
-  MatListModule, MatMenuModule, MatNativeDateModule, MatPaginatorModule,
-  MatSelectModule, MatSnackBarModule, MatTableModule
+  MatButtonModule, MatCardModule, MatCommonModule, MatIconModule, MatListModule,
+  MatInputModule, MatSelectModule,  MatTooltipModule,
+  MatMenuModule, MatNativeDateModule, MatSnackBarModule, MatTableModule, MatPaginatorModule, MatGridListModule
 } from '@angular/material';
-import { PopoverModule } from 'ngx-bootstrap';
-import { TooltipModule } from 'ngx-bootstrap';
 import {HttpModule} from '@angular/http';
 import {CovalentDialogsModule, CovalentLayoutModule, CovalentLoadingModule, CovalentMediaModule} from '@covalent/core';
 import {CampaignsModule} from './campaigns/campaigns.module';
@@ -50,11 +44,9 @@ import {AppRoutingModule, ROUTES} from './app.routing';
     CovalentLayoutModule,
     CovalentLoadingModule,
     CovalentMediaModule,
-    CampaignsModule,
     ROUTES,
-    AppRoutingModule,
-    PopoverModule.forRoot(),
-    TooltipModule.forRoot()
+    CampaignsModule,
+    MatTooltipModule
   ],
   exports: [
     HttpClientModule,

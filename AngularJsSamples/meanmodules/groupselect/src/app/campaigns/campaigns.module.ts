@@ -3,17 +3,30 @@ import {CdkTableModule} from '@angular/cdk/table';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import { MatButtonModule, MatCardModule, MatCommonModule, MatIconModule, MatListModule,
-  MatInputModule, MatSelectModule, MatCheckboxModule, MatProgressBarModule, MatGridListModule, MatPaginatorModule, MatTableModule,
-  MatMenuModule, MatNativeDateModule, MatSnackBarModule  } from '@angular/material';
+import {
+  MatButtonModule,
+  MatCardModule,
+  MatCommonModule,
+  MatIconModule,
+  MatListModule,
+  MatInputModule,
+  MatSelectModule,
+  MatCheckboxModule,
+  MatProgressBarModule,
+  MatGridListModule,
+  MatPaginatorModule,
+  MatTableModule,
+  MatMenuModule,
+  MatNativeDateModule,
+  MatSnackBarModule,
+  MatTooltipModule,
+  MatSortModule
+} from '@angular/material';
 import { CovalentChipsModule, CovalentCommonModule, CovalentDialogsModule, CovalentFileModule, CovalentSearchModule } from '@covalent/core';
-import { PopoverModule } from 'ngx-bootstrap';
-import { TooltipModule } from 'ngx-bootstrap';
 import { CampaignService } from './campaign.service';
 import { FormComponent } from './form/form.component';
 import { ListComponent } from './list/list.component';
 import { ItemComponent } from './item/item.component';
-
 
 @NgModule({
   declarations: [
@@ -47,8 +60,10 @@ import { ItemComponent } from './item/item.component';
     CovalentDialogsModule,
     CovalentFileModule,
     CovalentSearchModule,
-    PopoverModule.forRoot(),
-    TooltipModule.forRoot()
+    MatTooltipModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule
   ],
   providers: [CampaignService]
 })

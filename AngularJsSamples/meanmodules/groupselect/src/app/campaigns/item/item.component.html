@@ -1,0 +1,108 @@
+
+<mat-card *ngIf="campaign && !edit && !addDrawing">
+
+  <div layout="row" layout-align="start center" class="pad-right-sm">
+    <mat-card-title>Campaign</mat-card-title>
+    <span flex></span>
+    <span>
+      <button mat-icon-button [matMenuTriggerFor]="toolbarMenu"><mat-icon>more_vert</mat-icon></button>
+      <mat-menu #toolbarMenu="matMenu">
+        <button mat-menu-item (click)="onCopy()" [disabled]="!canCreate"><mat-icon>content_copy</mat-icon>Copy Campaign</button>
+      </mat-menu>
+    </span>
+  </div>
+
+<mat-card-content>
+
+  <mat-list>
+  <span layout="row" *ngIf="!edit">
+        <mat-list-item flex="30" layout="column">
+          <h4 mat-line>{{campaign.name}}</h4>
+          <p mat-line>Name</p>
+        </mat-list-item>
+        <mat-list-item flex="70" layout="column">
+          <h4 mat-line>{{campaign.description}}</h4>
+          <p mat-line>Description</p>
+        </mat-list-item>
+      </span>
+    <span layout="row" layout-align="start center" *ngIf="!edit">
+        <mat-list-item flex="20" layout="column">
+          <h4 mat-line>{{campaign.rate}}</h4>
+          <p mat-line>Default Entry Multiplier</p>
+        </mat-list-item>
+        <mat-list-item flex="20" layout="column">
+          <h4 mat-line>{{campaign.anticipationDuration || 0}} sec</h4>
+          <p mat-line>Drawing Notification</p>
+        </mat-list-item>
+        <mat-list-item span="flex">
+          <mat-checkbox class="push" [checked]="campaign.canRollover" disabled>Rollover</mat-checkbox>
+          <mat-checkbox class="push" [checked]="campaign.isAutoDraw" disabled>Auto Draw</mat-checkbox>
+          <mat-checkbox class="push" [checked]="campaign.isAutoNotify" disabled>Auto Notify</mat-checkbox>
+        </mat-list-item>
+      </span>
+    <span layout="row" layout-align="start center">
+        <mat-list-item flex="40" layout="column">
+            <mat-icon mat-list-avatar>group</mat-icon>
+            <h4 mat-line>{{groupList}}</h4>
+            <p mat-line>Groups</p>
+        </mat-list-item>
+        <mat-list-item flex="40" layout="column">
+            <mat-icon mat-list-avatar>toc</mat-icon>
+            <h4 mat-line>{{tierList}}</h4>
+            <p mat-line>Tiers</p>
+        </mat-list-item>
+  </span>
+  </mat-list>
+<div class="mat-subhead" style="padding-top:10px;padding-bottom:10px">
+<td-file-upload #fileUpload *ngIf="showUpload" [disabled]="disableUpload" (upload)="onFileUpload($event)" activeColor="primary">
+  <mat-icon>file_upload</mat-icon><span class="text-upper">Upload {{ fileUpload.files?.name }}</span>
+  <ng-template td-file-input-label>
+    <mat-icon>attach_file</mat-icon><span class="text-upper">Attach Rules</span>
+  </ng-template>
+</td-file-upload>
+</div>
+</mat-card-content>
+</mat-card>
+
+<mat-card *ngIf="campaign && !edit && !addDrawing">
+<mat-card-content>
+<div class="mat-subhead" style="padding-top:10px;padding-bottom:10px">
+  <mat-card-title>Multiplier Eligibility</mat-card-title>
+<mat-table [dataSource]="dataSource">
+
+  <!-- Name Column -->
+<ng-container matColumnDef="name">
+  <mat-header-cell mat-header-cell *matHeaderCellDef> Name</mat-header-cell>
+  <mat-cell  *matCellDef="let element" matTooltip={{element.name}} > {{element.name}}
+</mat-cell>
+</ng-container>
+
+  <!-- Type Column -->
+<ng-container matColumnDef="type">
+  <mat-header-cell mat-header-cell *matHeaderCellDef> Type</mat-header-cell>
+<mat-cell *matCellDef="let element"> {{element.type}} </mat-cell>
+</ng-container>
+
+  <!-- Multiplier Column -->
+<ng-container matColumnDef="multiplier">
+  <mat-header-cell mat-header-cell *matHeaderCellDef> Multiplier</mat-header-cell>
+<mat-cell *matCellDef="let element"> {{element.multiplier}} </mat-cell>
+</ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</mat-table>
+</div>
+  <mat-card-actions>
+    <button mat-button class="text-upper" (click)="onEdit()" *ngIf=" !campaign.isArchived" ><mat-icon>edit</mat-icon> Edit</button>
+    <button mat-button class="text-upper" (click)="onDownload()" *ngIf="campaign.rulesFilename?.length > 0"><mat-icon>file_download</mat-icon> Download Rules</button>
+    <button mat-button class="text-upper" (click)="onUpload()" *ngIf="campaign.canEdit && !showUpload && campaign.rulesFilename?.length > 0" [disabled]="!canUpdate"><mat-icon>file_upload</mat-icon> Upload Rules</button>
+    <button mat-button color="warn" class="text-upper" (click)="onArchive()" *ngIf="!campaign.isArchived" ><mat-icon>archive</mat-icon> Archive</button>
+  </mat-card-actions>
+</mat-card-content>
+</mat-card>
+
+<app-campaign-form *ngIf="campaign && groups && tiers && edit"
+                   [campaign]="campaign" [groups]="groups" [tiers]="tiers" (save)="onSaveCampaign($event)" (cancel)="onCancelCampaign()">
+</app-campaign-form>
+
