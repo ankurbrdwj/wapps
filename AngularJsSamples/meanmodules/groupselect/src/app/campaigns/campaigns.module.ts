@@ -27,6 +27,9 @@ import { CampaignService } from './campaign.service';
 import { FormComponent } from './form/form.component';
 import { ListComponent } from './list/list.component';
 import { ItemComponent } from './item/item.component';
+import {fakeBackendProvider} from '../fakeBackend.service';
+import {HTTP_INTERCEPTORS} from '@angular/common/http';
+import {JwtInterceptor} from '../jwt.interceptor';
 
 @NgModule({
   declarations: [
@@ -65,7 +68,12 @@ import { ItemComponent } from './item/item.component';
     MatPaginatorModule,
     MatSortModule
   ],
-  providers: [CampaignService]
+  providers: [CampaignService,
+    { provide: HTTP_INTERCEPTORS,
+      useClass: JwtInterceptor,
+      multi: true
+    },
+    fakeBackendProvider]
 })
 
 export class CampaignsModule {}

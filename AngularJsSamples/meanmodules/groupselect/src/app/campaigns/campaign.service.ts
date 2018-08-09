@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers } from '@angular/http';
+import { HttpClient ,HttpHeaders, HttpResponse } from "@angular/common/http";
 import { IUploadOptions } from '@covalent/core';
 import { Observable } from 'rxjs/Rx';
-import {Campaign, Group, Tier, EligibilityRate, Prize} from './campaign';
+import { Campaign, Group, Tier, EligibilityRate,Prize } from './campaign';
 
 @Injectable()
 export class CampaignService {
   private _baseUrl: string;
-  private _token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+  private _token: string;
 
   set BaseUrl(url: string) {
     this._baseUrl = url;
@@ -16,22 +16,25 @@ export class CampaignService {
   set Token(data: string) {
     this._token = data;
   }
+  private camapaignsUrl  = 'app/campaigns';
+  private groupsUrl  = 'app/groups';
+  private tiersUrl  = 'app/tiers';
+  constructor(protected httpClient: HttpClient) {
 
-  constructor(private http: Http) {
   }
 
   getAll(archive: boolean = false): Observable<Campaign[]> {
     let flag = archive ? '?isarchived=true' : '';
-    let campaigns$ = this.http
-      .get('/assets/data/campaigns.json', {headers: this.getHeaders()})
+    let campaigns$ = this.httpClient
+      .get(`${this.camapaignsUrl}`, { headers: this.getHeaders() })
       .map(mapCampaigns)
       .catch(handleError);
     return campaigns$;
   }
 
   get(id: string): Observable<Campaign> {
-    let campaign$ = this.http
-      .get('/assets/data/campaign.json', {headers: this.getHeaders()})
+    let campaign$ = this.httpClient
+      .get(`${this._baseUrl}/campaigns/${id}`, { headers:  this.getHeaders() })
       .map(mapCampaign)
       .catch(handleError);
     return campaign$;
@@ -43,8 +46,8 @@ export class CampaignService {
     }
 
     let campaign$;
-    campaign$ = this.http
-      .post(`${this._baseUrl}/campaigns`, JSON.stringify(req), {headers: this.getHeaders()})
+    campaign$ = this.httpClient
+      .post(`${this._baseUrl}/campaigns`, JSON.stringify(req), { headers: this.getHeaders() })
       .map(mapCampaign)
       .catch(handleError);
     return campaign$;
@@ -56,8 +59,8 @@ export class CampaignService {
     }
 
     let campaign$;
-    campaign$ = this.http
-      .put(`${this._baseUrl}/campaigns`, JSON.stringify(req), {headers: this.getHeaders()})
+    campaign$ = this.httpClient
+      .put(`${this._baseUrl}/campaigns`, JSON.stringify(req), { headers: this.getHeaders() })
       .map(mapCampaign)
       .catch(handleError);
     return campaign$;
@@ -68,157 +71,161 @@ export class CampaignService {
       isArchived: isArchived
     }
 
-    let res$ = this.http
-      .patch(`${this._baseUrl}/campaigns/${id}`, JSON.stringify(req), {headers: this.getHeaders()})
-      .map((res: Response) => res.json())
+    let res$ = this.httpClient
+      .patch<Campaign>(`${this._baseUrl}/campaigns/${id}`, JSON.stringify(req), { headers: this.getHeaders() })
       .catch(handleError);
     return res$;
   }
 
   groups() {
-    let groups$ = this.http
-      .get('/assets/data/groups.json', {headers: this.getHeaders()})
+    let groups$ = this.httpClient
+      .get(`${this.groupsUrl}`, { headers: this.getHeaders() })
       .map(mapGroups)
       .catch(handleError);
-
     return groups$;
   }
 
   tiers() {
-    let tiers$ = this.http
-      .get('/assets/data/tiers.json', {headers: this.getHeaders()})
+    let tiers$ = this.httpClient
+      .get(`${this.tiersUrl}`, {headers: this.getHeaders()})
       .map(mapTiers)
       .catch(handleError);
     return tiers$;
   }
 
-    uploadOptions(id: string, file: File) {
-        let options: IUploadOptions = {
-            url: `${this._baseUrl}/campaigns/${id}/upload`,
-            method: 'post',
-            headers: { Accept: 'application/json' },
-            file: file
-        };
-        if (this._token) options.headers.Authorization = 'Bearer ' + this._token;
+  uploadOptions(id: string, file: File) {
+    let options: IUploadOptions = {
+      url: `${this._baseUrl}/campaigns/${id}/upload`,
+      method: 'post',
+      headers: { Accept: 'application/json' },
+      file: file
+    };
+    if (this._token) options.headers.Authorization = 'Bearer ' + this._token;
 
-        return options;
-    }
+    return options;
+  }
 
-    getRulesDownloadUrl(id: string): string {
-        return `${this._baseUrl}/campaigns/${id}/download`;
-    }
+  getRulesDownloadUrl(id: string): string {
+    return `${this._baseUrl}/campaigns/${id}/download`;
+  }
 
-    getHeaders() {
-        let headers = new Headers();
-        headers.append('Accept', 'application/json');
-        if (this._token) {
-          headers.append('Authorization', 'Bearer ' + this._token);
-        }
-        return headers;
-    }
+  getHeaders() {
+    let headers = new HttpHeaders();
+    headers.append('Accept', 'application/json');
+    if (this._token) headers.append('Authorization', 'Bearer ' + this._token);
+    return headers;
+  }
 }
 
-function  mapCampaigns(response: Response): Campaign[] {
+function mapCampaigns(response: HttpResponse<Campaign[]>): Campaign[] {
 
-    let data = response.json();
-    if (!data.campaigns) {
-        return [];
-    }
+  let data = response.body;
+  if (!data) {
+    return [];
+  }
 
-    return data.campaigns.map(toCampaign);
+  return data.map(toCampaign);
 }
 
-function  mapCampaign(response: Response): Campaign {
+function mapCampaign(response: HttpResponse<Campaign>): Campaign {
 
-    return toCampaign(response.json().campaign);
+  return toCampaign(response.body);
 }
 
 function mapPrizes(prizes: any): Prize[] {
 
-    return prizes ? prizes.map(toPrize) : [];
+  return prizes ? prizes.map(toPrize) : [];
 }
 
-function mapGroups(response: Response): Group[] {
-    let data = response.json();
-    return data.groups ? data.groups.map(toGroup) : [];
+function mapGroups(response: HttpResponse<Group[]>): Group[] {
+  let data = response.body;
+  return data ? data.map(toGroup) : [];
 }
-function mapTiers(response: Response): Tier[] {
 
-  let data = response.json();
-  return data.tiers ? data.tiers.map(toTier) : [];
+function mapTiers(response: HttpResponse<Tier[]>): Tier[] {
+
+  let data = response.body;
+  return data ? data.map(toTier) : [];
 }
+
 function mapEligibilityRates(eligibilityRates: any): EligibilityRate[] {
 
   return eligibilityRates ? eligibilityRates.map(toEligibilityRate) : [];
 }
+
 function toCampaign(r: any): Campaign {
-    let campaign = <Campaign>({
-        id: r.id,
-        name: r.name,
-        description: r.description,
-        rulesFilename: r.rulesFilename,
-        prizes: mapPrizes(r.prizes),
-        groups: r.groups,
-        tiers: r.tiers,
-        rate: r.rate,
-        eligibilityRate: mapEligibilityRates(r.eligibilityRate),
-        canRollover: r.canRollover,
-        isArchived: r.isArchived,
-        isAutoDraw: r.isAutoDraw,
-        isAutoNotify: r.isAutoNotify,
-        anticipationDuration: r.anticipationDuration,
-        canEdit: r.canEdit
-    });
-    console.log('Parsed campaign:', campaign);
-    return campaign;
+  let isCampaignComplete = false;
+  if (r.status === 'Completed') {
+    isCampaignComplete = true;
+  }
+  let campaign = <Campaign>({
+    id: r.id,
+    name: r.name,
+    description: r.description,
+    rulesFilename: r.rulesFilename,
+    prizes: mapPrizes(r.prizes),
+    groups: r.groups,
+    tiers: r.tiers,
+    manufacturers: r.manufacturers,
+    rate: r.rate,
+    eligibilityRate: mapEligibilityRates(r.eligibilityRate),
+    canRollover: r.canRollover,
+    isArchived: r.isArchived,
+    isAutoDraw: r.isAutoDraw,
+    isAutoNotify: r.isAutoNotify,
+    anticipationDuration: r.anticipationDuration,
+    canEdit: r.canEdit,
+    status: r.status,
+    isComplete: isCampaignComplete
+  });
+  return campaign;
 }
 
 function toPrize(r: any): Prize {
-    let prize = <Prize>({
-        name: r.name,
-        value: r.value,
-        rolloverType: r.rolloverType,
-        rolloverValue: r.rolloverValue
-    });
-    console.log('Parsed prize:', prize);
-    return prize;
+  let prize = <Prize>({
+    name: r.name,
+    value: r.value,
+    rolloverType: r.rolloverType,
+    rolloverValue: r.rolloverValue
+  });
+  return prize;
 }
 
 function toGroup(r: any): Group {
-    let group = <Group>({
-        id: r.id,
-        name: r.name
-    });
-    console.log('Parsed group: ', group);
-    return group;
+  let group = <Group>({
+    id: r.id,
+    name: r.name
+  });
+  return group;
 }
+
 function toTier(r: any): Tier {
   let tier = <Tier>({
     id: r.id,
     name: r.name
   });
-  console.log('Parsed tier: ', tier);
   return tier;
 }
-function toEligibilityRate(r: any): EligibilityRate {
+
+function toEligibilityRate(r: any):EligibilityRate {
   let er = <EligibilityRate>({
     id: r.id,
-    name: r.name,
-    type: r.name,
-    rate: r.rate
+    type: r.type,
+    rate: r.rate,
+    name: r.name
   });
-  console.log('Parsed eligibility: ', er);
   return er;
 }
-function handleError(response: any) {
-    let error = response._body || {};
-    if (error.type) {
-        return Observable.throw(error.type);
-    } else {
-        error = JSON.parse(response._body);
-    }
 
-    let errMsg = (error.err) ? error.err :
-        error.status ? `${error.status} - ${error.statusText}` : 'Server error';
-    return Observable.throw(errMsg);
+function handleError(response: HttpResponse<any>) {
+  let error = response.body|| {};
+  if (error.type) {
+    return Observable.throw(error.type);
+  } else {
+    error = JSON.parse(response.body);
+  }
+
+  let errMsg = (error.err) ? error.err :
+    error.status ? `${error.status} - ${error.statusText}` : 'Server error';
+  return Observable.throw(errMsg);
 }

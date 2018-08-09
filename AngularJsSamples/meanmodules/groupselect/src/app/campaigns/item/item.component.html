@@ -1,4 +1,3 @@
-
 <mat-card *ngIf="campaign && !edit && !addDrawing">
 
   <div layout="row" layout-align="start center" class="pad-right-sm">
@@ -41,68 +40,72 @@
         </mat-list-item>
       </span>
     <span layout="row" layout-align="start center">
-        <mat-list-item flex="40" layout="column">
+        <mat-list-item flex="35" layout="column">
             <mat-icon mat-list-avatar>group</mat-icon>
-            <h4 mat-line>{{groupList}}</h4>
+            <h4 matTooltip="{{groupList}}" mat-line>{{groupList}}</h4>
             <p mat-line>Groups</p>
         </mat-list-item>
-        <mat-list-item flex="40" layout="column">
+        <mat-list-item flex="30" layout="column">
             <mat-icon mat-list-avatar>toc</mat-icon>
-            <h4 mat-line>{{tierList}}</h4>
+            <h4 matTooltip="{{tierList}}" mat-line>{{tierList}}</h4>
             <p mat-line>Tiers</p>
+		</mat-list-item>
+        <mat-list-item flex="35" layout="column">
+            <mat-icon mat-list-avatar>games</mat-icon>
+            <h4 matTooltip="{{manufacturerList}}" mat-line>{{manufacturerList}}</h4>
+            <p mat-line>Manufacturers</p>
         </mat-list-item>
   </span>
   </mat-list>
-<div class="mat-subhead" style="padding-top:10px;padding-bottom:10px">
-<td-file-upload #fileUpload *ngIf="showUpload" [disabled]="disableUpload" (upload)="onFileUpload($event)" activeColor="primary">
+  <div class="mat-subhead" style="padding-top:10px;padding-bottom:10px">
+
+  </div>
+
+  <div class="mat-subhead" style="padding-top:10px;padding-bottom:10px">
+    <mat-card-title>Multiplier Eligibilities</mat-card-title>
+    <mat-table [dataSource]="dataSource">
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <mat-header-cell mat-header-cell *matHeaderCellDef> Name</mat-header-cell>
+        <mat-cell  *matCellDef="let element" matTooltip={{element.name}} > {{element.name}}
+        </mat-cell>
+      </ng-container>
+
+      <!-- Type Column -->
+      <ng-container matColumnDef="type">
+        <mat-header-cell mat-header-cell *matHeaderCellDef> Type</mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.type}} </mat-cell>
+      </ng-container>
+
+      <!-- Multiplier Column -->
+      <ng-container matColumnDef="multiplier">
+        <mat-header-cell mat-header-cell *matHeaderCellDef> Multiplier</mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.multiplier}} </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+  </div>
+<mat-card-actions>
+  <button mat-button class="text-upper" (click)="onEdit()" *ngIf="campaign.canEdit && !campaign.isArchived" [disabled]="!canUpdate" ><mat-icon>edit</mat-icon> Edit</button>
+  <button mat-button class="text-upper" (click)="onDownload()" *ngIf="campaign.rulesFilename?.length > 0"><mat-icon>file_download</mat-icon> Download Rules</button>
+  <button mat-button class="text-upper" (click)="onUpload()" *ngIf="campaign.canEdit && !showUpload && campaign.rulesFilename?.length > 0" [disabled]="!canUpdate"><mat-icon>file_upload</mat-icon> Upload Rules</button>
+  <button mat-button color="warn" class="text-upper" (click)="onArchive()" *ngIf="!campaign.isArchived" ><mat-icon>archive</mat-icon> Archive</button>
+<td-file-upload class ="text-upper mat-button ng-star-inserted" #fileUpload *ngIf="showUpload" [disabled]="disableUpload" (upload)="onFileUpload($event)" activeColor="primary">
   <mat-icon>file_upload</mat-icon><span class="text-upper">Upload {{ fileUpload.files?.name }}</span>
   <ng-template td-file-input-label>
     <mat-icon>attach_file</mat-icon><span class="text-upper">Attach Rules</span>
   </ng-template>
 </td-file-upload>
-</div>
+</mat-card-actions>
 </mat-card-content>
 </mat-card>
 
-<mat-card *ngIf="campaign && !edit && !addDrawing">
-<mat-card-content>
-<div class="mat-subhead" style="padding-top:10px;padding-bottom:10px">
-  <mat-card-title>Multiplier Eligibility</mat-card-title>
-<mat-table [dataSource]="dataSource">
-
-  <!-- Name Column -->
-<ng-container matColumnDef="name">
-  <mat-header-cell mat-header-cell *matHeaderCellDef> Name</mat-header-cell>
-  <mat-cell  *matCellDef="let element" matTooltip={{element.name}} > {{element.name}}
-</mat-cell>
-</ng-container>
-
-  <!-- Type Column -->
-<ng-container matColumnDef="type">
-  <mat-header-cell mat-header-cell *matHeaderCellDef> Type</mat-header-cell>
-<mat-cell *matCellDef="let element"> {{element.type}} </mat-cell>
-</ng-container>
-
-  <!-- Multiplier Column -->
-<ng-container matColumnDef="multiplier">
-  <mat-header-cell mat-header-cell *matHeaderCellDef> Multiplier</mat-header-cell>
-<mat-cell *matCellDef="let element"> {{element.multiplier}} </mat-cell>
-</ng-container>
-
-  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-</mat-table>
-</div>
-  <mat-card-actions>
-    <button mat-button class="text-upper" (click)="onEdit()" *ngIf=" !campaign.isArchived" ><mat-icon>edit</mat-icon> Edit</button>
-    <button mat-button class="text-upper" (click)="onDownload()" *ngIf="campaign.rulesFilename?.length > 0"><mat-icon>file_download</mat-icon> Download Rules</button>
-    <button mat-button class="text-upper" (click)="onUpload()" *ngIf="campaign.canEdit && !showUpload && campaign.rulesFilename?.length > 0" [disabled]="!canUpdate"><mat-icon>file_upload</mat-icon> Upload Rules</button>
-    <button mat-button color="warn" class="text-upper" (click)="onArchive()" *ngIf="!campaign.isArchived" ><mat-icon>archive</mat-icon> Archive</button>
-  </mat-card-actions>
-</mat-card-content>
-</mat-card>
 
 <app-campaign-form *ngIf="campaign && groups && tiers && edit"
                    [campaign]="campaign" [groups]="groups" [tiers]="tiers" (save)="onSaveCampaign($event)" (cancel)="onCancelCampaign()">
 </app-campaign-form>
+
 

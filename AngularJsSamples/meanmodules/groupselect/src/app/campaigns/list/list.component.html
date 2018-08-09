@@ -1,42 +1,71 @@
 <mat-card *ngIf="campaigns">
 
-  <div layout="row" layout-align="start center" class="push-right">
-    <mat-card-title>{{isArchive ? 'Archived' : ''}} Campaigns</mat-card-title>
-    <span flex></span>
-    <td-search-box placeholder="Search..." [showUnderline]="true" (searchDebounce)="onSearch($event)"></td-search-box>
-  </div>
+<div layout="row" layout-align="start center" class="push-right">
+<mat-card-title>{{isArchive ? 'Archived' : ''}} Campaigns</mat-card-title>
+
+  <mat-card-actions *ngIf="!isArchive">
+    <button mat-button color="primary" name="createCampaign" class="text-upper" [routerLink]="['/campaigns/create']"
+            [disabled]="!canCreate">
+      <mat-icon>add</mat-icon>
+    </button>
+  </mat-card-actions>
+  <span flex></span>
+  <td-search-box placeholder="Search..." (keyup)="applyFilter($event.target.value)"
+                 (mousedown)="applyFilter($event.target.value)"
+                 (paste)="applyFilter($event.clipboardData.getData('text/plain'))" (clear)="clearData()"
+                 [showUnderline]="true"></td-search-box>
+</div>
 
   <mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
 
-  <mat-card-content>
 
-    <mat-list>
+<mat-card-content>
+<mat-table [dataSource]="dataSource" (matSortChange)="sortData($event)" matSortActive="name" matSort
+           *ngIf="!isLoading && dataSource.filteredData.length > 0">
 
-      <mat-list-item layout="row" *ngIf="campaigns.length > 0">
-        <span flex="10"></span>
-        <span flex="25" layout="column" class="mat-body-1 tc-grey-500">Name</span>
-        <span flex="40" layout="column" class="mat-body-1 tc-grey-500">Description</span>
-        <span flex></span>
-      </mat-list-item>
+<ng-container matColumnDef="name">
+  <mat-header-cell *matHeaderCellDef [ngClass]="sortActive==='name' && sortDir !=='' ? 'positive' : 'negative'"
+                   class="mat-body-1" mat-sort-header> Name
+  </mat-header-cell>
+<mat-cell *matCellDef="let row"  class="mat-body-1 text-truncate"> {{row.name}}</mat-cell>
+</ng-container>
 
-      <ng-template let-campaign ngFor [ngForOf]="campaigns">
+<ng-container matColumnDef="description">
+  <mat-header-cell *matHeaderCellDef
+                   [ngClass]="sortActive==='description' && sortDir !=='' ? 'positive' : 'negative'"
+                   class="mat-body-1" mat-sort-header> Description
+  </mat-header-cell>
+<mat-cell *matCellDef="let row" class="mat-body-1 text-truncate"> {{row.description}}</mat-cell>
+</ng-container>
 
-        <mat-divider></mat-divider>
-        <mat-list-item layout="row">
-          <span flex="10"><button mat-button color="primary" class="text-upper" [routerLink]="['/campaigns', campaign.id]">View</button></span>
-          <span flex="25" layout="column" class="mat-body-1 text-truncate">{{campaign.name}}</span>
-          <span flex="40" layout="column" class="mat-body-1 text-truncate">{{campaign.description}}</span>
-        </mat-list-item>
+<ng-container matColumnDef="status">
+  <mat-header-cell *matHeaderCellDef [ngClass]="sortActive==='status' && sortDir !=='' ? 'positive' : 'negative'"
+                   class="mat-body-1" mat-sort-header> Status
+  </mat-header-cell>
+<mat-cell *matCellDef="let row" class="mat-body-1 text-truncate"> {{row.status}}</mat-cell>
+</ng-container>
 
-      </ng-template>
+  <ng-container matColumnDef="view">
+    <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+    <mat-cell *matCellDef="let row">
 
-    </mat-list>
+      <button name="archive" mat-button class="text-upper archive" (click)="openDialog(row.id,row.name)"
+              *ngIf="!row.isArchived && row.isComplete" [disabled]="!canArchive" [disabled]="!canUpdate">
+        <mat-icon color="primary">archive</mat-icon>
+      </button>
+      <span *ngIf="row.isArchived || !row.isComplete" class="no-archive">
+          </span>
+      <span>
+            <button mat-button color="primary" class="text-upper" [routerLink]="['/campaigns', row.id]">View</button>
+          </span>
+    </mat-cell>
+  </ng-container>
 
-  </mat-card-content>
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+</mat-table>
 
-
-  <mat-card-actions>
-    <button mat-button color="primary" class="text-upper" [routerLink]="['/campaigns/create']" >New Campaign</button>
-  </mat-card-actions>
-
+  <mat-paginator [pageSize]="20" [pageSizeOptions]="[10,20,30]" showFirstLastButtons></mat-paginator>
+</mat-card-content>
 </mat-card>
+

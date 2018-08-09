@@ -1,8 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TdLoadingService, TdDialogService, TdFileService, IUploadOptions } from '@covalent/core';
-import { MatSnackBar, MatTableDataSource } from '@angular/material';
-
+import { MatSnackBar, MatTableDataSource, MatTooltip } from '@angular/material';
 import { Campaign, Group, Tier, EligibilityRate, TableElement, Prize } from '../campaign';
 import { CampaignService } from '../campaign.service';
 
@@ -22,6 +21,7 @@ export class ItemComponent implements OnInit, OnDestroy {
   displayedColumns: string[];
   groupList: string;
   tierList: string;
+  manufacturerList: string;
   csub: any;
   gsub: any;
   tsub: any;
@@ -43,7 +43,7 @@ export class ItemComponent implements OnInit, OnDestroy {
     private _dialogService: TdDialogService,
     private _fileService: TdFileService,
     private _snackBar: MatSnackBar,
-    private _campaignService: CampaignService,
+    private _campaignService: CampaignService
   ) { }
 
   ngOnInit() {
@@ -67,13 +67,13 @@ export class ItemComponent implements OnInit, OnDestroy {
           prizes: [],
           tiers: [],
           eligibilityRate: [],
+          manufacturers: [],
           rate: null,
           canRollover: false,
           isArchived: false,
           isAutoDraw: false,
           isAutoNotify: false,
-          anticipationDuration: null,
-          isComplete: false
+          anticipationDuration: null
         };
       }
     });
@@ -116,6 +116,7 @@ export class ItemComponent implements OnInit, OnDestroy {
           this.showUpload = this.campaign.canEdit && this.campaign.rulesFilename.length === 0;
           this.convertTiers();
           this.getEligibility();
+          this.convertManufacturers();
         },
         error => {
           this._dialogService.openAlert({ message: error });
@@ -166,8 +167,8 @@ export class ItemComponent implements OnInit, OnDestroy {
           tierElement.multiplier = row;
         }
       }
-      if ( groupNames.length > 0 ) { groupElement.name = groupNames.join(',') } ;
-      if ( tierNames.length > 0 ) { tierElement.name = tierNames.join(',') } ;
+      if ( groupNames.length > 0 ) { groupElement.name = groupNames.join(', ') } ;
+      if ( tierNames.length > 0 ) { tierElement.name = tierNames.join(', ') } ;
       if (!(Object.keys(groupElement).length === 0 && groupElement.constructor === Object)) {
         groupElement.name.replace(',$', '');
         this.table.push(groupElement);
@@ -179,6 +180,12 @@ export class ItemComponent implements OnInit, OnDestroy {
     }
     this.dataSource = new MatTableDataSource<TableElement>(this.table);
   }
+
+  convertManufacturers() {
+    this.manufacturerList = this.campaign.manufacturers.join(', ');
+    if (this.manufacturerList.length == 0) this.manufacturerList = '(No Manufacturers)';
+  }
+
   onEdit() {
     this.edit = true;
   }
@@ -207,6 +214,7 @@ export class ItemComponent implements OnInit, OnDestroy {
     this.convertGroups();
     this.convertTiers();
     this.getEligibility();
+    this.convertManufacturers();
 
     if (this.create) {
       let o = this._campaignService
@@ -300,5 +308,17 @@ export class ItemComponent implements OnInit, OnDestroy {
     this.disableUpload = false;
   }
 
+  onArchive() {
+    this._loadingService.register();
+    let o = this._campaignService
+      .archive(this.id)
+      .subscribe(response => {
+        setTimeout(() => this._loadingService.resolve(), 800);
+        this._router.navigate(['/campaigns'])
+      }, error => {
+        setTimeout(() => this._loadingService.resolve(), 800);
+        this._dialogService.openAlert({ message: error });
+      });
+  }
 }
 

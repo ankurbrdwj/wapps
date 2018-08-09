@@ -12,9 +12,10 @@ import {
 import {HttpModule} from '@angular/http';
 import {CovalentDialogsModule, CovalentLayoutModule, CovalentLoadingModule, CovalentMediaModule} from '@covalent/core';
 import {CampaignsModule} from './campaigns/campaigns.module';
-import {HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {AppRoutingModule, ROUTES} from './app.routing';
-
+import { FakeBackendInterceptor, fakeBackendProvider} from './fakeBackend.service';
+import {JwtInterceptor} from './jwt.interceptor';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,7 @@ import {AppRoutingModule, ROUTES} from './app.routing';
     CovalentMediaModule,
     ROUTES,
     CampaignsModule,
-    MatTooltipModule
+    MatTooltipModule,
   ],
   exports: [
     HttpClientModule,
@@ -64,8 +65,13 @@ import {AppRoutingModule, ROUTES} from './app.routing';
     MatPaginatorModule,
     MatTableModule
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [{
+    provide: HTTP_INTERCEPTORS,
+    useClass: JwtInterceptor,
+    multi: true
+  },
+    fakeBackendProvider],
+    bootstrap: [AppComponent]
 })
-export class AppModule {
+  export class AppModule {
 }

@@ -7,6 +7,7 @@ export interface Campaign {
   prizes: Prize[];
   groups: string[];
   tiers: string[];
+  manufacturers: string[];
   eligibilityRate: EligibilityRate[];
   rate: number;
   canRollover: boolean;

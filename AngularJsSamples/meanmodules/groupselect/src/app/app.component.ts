@@ -18,10 +18,6 @@ export class AppComponent {
 
   constructor(
     public _dialogService: TdDialogService,
-    public _media: TdMediaService,
-    private _iconRegistry: MatIconRegistry,
-    private _domSanitizer: DomSanitizer,
-    private _campaignService: CampaignService,
   ) {
  /*   this._iconRegistry.addSvgIconInNamespace(
       'assets',
